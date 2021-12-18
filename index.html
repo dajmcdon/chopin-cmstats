@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Markov-switching state space models for uncovering musical interpretation</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Daniel J. McDonald" />
+    <meta name="date" content="2021-12-20" />
+    <script src="index_files/header-attrs/header-attrs.js"></script>
+    <script src="index_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="index_files/pymjs/pym.v1.js"></script>
+    <script src="index_files/widgetframe-binding/widgetframe.js"></script>
+    <link rel="stylesheet" href="src/xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="src/slides-style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;span&gt;&lt;a href="https://dajmcdon.github.io/chopin-talk" style="color:white"&gt;dajmcdon.github.io/chopin-talk&lt;/a&gt;&lt;/span&gt;&lt;/div&gt; 
+
+---
+background-image: url("gfx/cover-1.svg")
+background-size: contain
+background-position: top
+
+&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;
+
+
+
+.center[# Markov-switching state space models for uncovering musical interpretation]
+
+
+.pull-left[
+###Daniel J. McDonald
+###University of British Columbia
+####CMStatistics &amp;mdash; 20 December 2021
+]
+
+.pull-right[.center[.middle[
+&lt;br/&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;![:scale 50%](gfx/qr-slides.png)&lt;/td&gt;
+&lt;td&gt;![:scale 50%](gfx/qr-code.png)&lt;/td&gt;
+&lt;td&gt;![:scale 50%](gfx/qr-mywww.png)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M208 352c-2.39 0-4.78.35-7.06 1.09C187.98 357.3 174.35 360 160 360c-14.35 0-27.98-2.7-40.95-6.91-2.28-.74-4.66-1.09-7.05-1.09C49.94 352-.33 402.48 0 464.62.14 490.88 21.73 512 48 512h224c26.27 0 47.86-21.12 48-47.38.33-62.14-49.94-112.62-112-112.62zm-48-32c53.02 0 96-42.98 96-96s-42.98-96-96-96-96 42.98-96 96 42.98 96 96 96zM592 0H208c-26.47 0-48 22.25-48 49.59V96c23.42 0 45.1 6.78 64 17.8V64h352v288h-64v-64H384v64h-76.24c19.1 16.69 33.12 38.73 39.69 64H592c26.47 0 48-22.25 48-49.59V49.59C640 22.25 618.47 0 592 0z"/></svg> Slides&lt;/td&gt;
+&lt;td&gt;<svg aria-hidden="true" role="img" viewBox="0 0 640 512" style="height:1em;width:1.25em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M278.9 511.5l-61-17.7c-6.4-1.8-10-8.5-8.2-14.9L346.2 8.7c1.8-6.4 8.5-10 14.9-8.2l61 17.7c6.4 1.8 10 8.5 8.2 14.9L293.8 503.3c-1.9 6.4-8.5 10.1-14.9 8.2zm-114-112.2l43.5-46.4c4.6-4.9 4.3-12.7-.8-17.2L117 256l90.6-79.7c5.1-4.5 5.5-12.3.8-17.2l-43.5-46.4c-4.5-4.8-12.1-5.1-17-.5L3.8 247.2c-5.1 4.7-5.1 12.8 0 17.5l144.1 135.1c4.9 4.6 12.5 4.4 17-.5zm327.2.6l144.1-135.1c5.1-4.7 5.1-12.8 0-17.5L492.1 112.1c-4.8-4.5-12.4-4.3-17 .5L431.6 159c-4.6 4.9-4.3 12.7.8 17.2L523 256l-90.6 79.7c-5.1 4.5-5.5 12.3-.8 17.2l43.5 46.4c4.5 4.9 12.1 5.1 17 .6z"/></svg> Code&lt;/td&gt;
+&lt;td&gt;<svg aria-hidden="true" role="img" viewBox="0 0 512 512" style="height:1em;width:1em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:currentColor;overflow:visible;position:relative;"><path d="M256 8C118.941 8 8 118.919 8 256c0 137.059 110.919 248 248 248 48.154 0 95.342-14.14 135.408-40.223 12.005-7.815 14.625-24.288 5.552-35.372l-10.177-12.433c-7.671-9.371-21.179-11.667-31.373-5.129C325.92 429.757 291.314 440 256 440c-101.458 0-184-82.542-184-184S154.542 72 256 72c100.139 0 184 57.619 184 160 0 38.786-21.093 79.742-58.17 83.693-17.349-.454-16.91-12.857-13.476-30.024l23.433-121.11C394.653 149.75 383.308 136 368.225 136h-44.981a13.518 13.518 0 0 0-13.432 11.993l-.01.092c-14.697-17.901-40.448-21.775-59.971-21.775-74.58 0-137.831 62.234-137.831 151.46 0 65.303 36.785 105.87 96 105.87 26.984 0 57.369-15.637 74.991-38.333 9.522 34.104 40.613 34.103 70.71 34.103C462.609 379.41 504 307.798 504 232 504 95.653 394.023 8 256 8zm-21.68 304.43c-22.249 0-36.07-15.623-36.07-40.771 0-44.993 30.779-72.729 58.63-72.729 22.292 0 35.601 15.241 35.601 40.77 0 45.061-33.875 72.73-58.161 72.73z"/></svg> My WWW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+]]]
+
+???
+
+
+
+
+
+
+---
+
+## Musical taste
+
+* Easy to describe music you like:
+  - "Jazzy sound"
+  - "Strong beat"
+  - "good lyrics"
+  - "anything by Taylor Swift"
+  
+* Harder to describe a .tertiary[performance]
+
+* Classical music is mainly about performances of the .tertiary[same] music
+
+* How do we think about which ones we like?
+
+---
+
+## Primer on "classical" music
+
+* Written between 6th century and today
+
+* Includes music written during the Classical period (1750&amp;ndash;1820)
+
+&lt;blockquote cite="Leonard Bernstein"&gt;The real difference is that when a composer writes a piece of what’s usually called classical music, he puts down the exact notes that he wants, the exact instruments or voices that he wants to play or sing those notes—even the exact number of instruments or voices; and he also writes down as many directions as he can think of. &lt;/blockquote&gt;
+
+* Generally much more "musically" complicated
+
+.center[&lt;img src="gfx/hey-jude-single.jpg" onclick="playAudio('gfx/hey-jude-clip.m4a')" height="175px"&gt;]
+
+???
+
+* Musically complicated = wider range of chords, keys, instrumentation, contrasts
+
+* Hey Jude: 3 chords (2 others briefly) in 7 minutes. Same key the whole time.
+
+* For today, Chopin is running example
+
+* Chopin: 6 unique chords in first 10 seconds. Two key areas in 1.5 minutes of music.
+
+
+---
+
+class: middle
+
+.pull-left[
+&lt;img src="gfx/me.jpg" height="500px" onclick="playAudio('gfx/RubinsteinFlatTempo.m4a')"&gt;
+]
+
+.pull-right[
+&lt;img src="gfx/rubin.jpg" height="500px" onclick="playAudio('gfx/Rubinstein.m4a')"&gt;
+]
+
+
+???
+
+Which one do you like better?
+
+---
+
+## What's different?
+
+1. Mistakes
+
+2. Extraneous noise
+
+3. Recording quality
+
+4. Articulation / Legato / Bowing / Breathing
+
+5. Dynamics
+
+6. Tempo / Rubato
+
+???
+
+The first three are uninteresting.
+
+The others are about .red[.bold[interpretation]]
+
+We like performances with "better" interpretations
+
+---
+class: inverse, middle, center
+background-image: url("https://www.worldpianonews.com/wp-content/uploads/2020/05/Bosendorfer-280VC-custom4_Post-scaled.jpg")
+background-size: cover
+
+
+???
+
+Piano music
+
+* Simplifies the problem
+  - No bowing, fingering, breathing, glissando
+  
+* Focus on __tempo__ 
+
+
+
+
+---
+
+
+
+## Musical tempo
+
+&lt;img src="gfx/rubinstein-tempo-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+* Notes change "speed"
+
+* Sometimes purposeful
+
+* Speed is important for .red[.bold[interpretation]]
+
+---
+class: inverse, center, middle
+
+# What is this "music"?
+
+
+
+---
+
+## Important musical terms
+
+.pull-left-narrow[
+### Notes
+
+### Beat
+
+### Measure
+
+### Time signature
+
+### Tempo
+
+### Dynamics
+]
+
+.pull-right-wide[
+All those little black dots  
+
+Strongly felt impetus 
+
+Collections of notes delimited by vertical "barlines" 
+
+Number of beats / measure; type of note that gets the beat  
+
+The prevailing speed, measured in bpm  
+
+Loudness of the note
+]
+
+
+&lt;img src="gfx/ChopinFirst3.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Data
+
+* CHARM Mazurka Project
+
+&lt;img src="gfx/charm.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+* Focus on timing only (dynamics also available)
+
+* 50 recordings: Chopin Mazurka Op. 68 No. 3
+
+* Recorded between 1931 and 2006
+
+* 45 different performers
+
+---
+class: middle
+
+&lt;img src="gfx/all-performance-lines-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+
+
+&lt;img src="gfx/example-perf-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Chopin &amp; Mazurkas
+
+.pull-left[
+#### Fryderyk Chopin (1810&amp;ndash;1849)
+
+* Born in Poland
+
+* Moved to Paris at 21
+
+* Virtuoso pianist
+
+* Wrote mainly piano music
+]
+
+.pull-right[
+#### Mazurka
+
+* A Polish dance
+
+* Chopin composed at least 58 for Piano
+
+* Repetition is very important
+
+* Certain rhythmic figures
+
+
+]
+
+???
+
+Everything he wrote includes piano
+
+
+
+---
+
+background-image: url("gfx/entire-mazurka.jpg")
+background-position: center
+background-size: contain
+
+???
+
+Tempo markings, importantly, only 2 + rit and fermata
+
+Dotted eighth sixteenth
+
+ABA structure
+
+Minor phrases
+
+Repetition
+
+Chord progression
+
+
+
+
+---
+class: center, middle, inverse
+
+# Switching Kalman Filter
+
+
+
+---
+
+## Thinking about tempo
+
+&lt;br/&gt;
+
+.pull-left[
+### 1. Playing in tempo
+
+&lt;br/&gt;
+
+### 2. Accelerando (speed up)
+
+&lt;br/&gt;
+
+### 3. Allargando (slow down)
+
+&lt;br/&gt;
+
+### 4. Tenuto (emphasis)
+]
+
+.pull-right[.center[
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Metronome_Mälzel_1.jpg/291px-Metronome_Mälzel_1.jpg)
+]]
+
+---
+
+## Transition diagram
+
+
+.pull-left-wide[
+&lt;img src="gfx/markov-trans.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right-narrow[
+1. .const[__Constant tempo__]
+
+&lt;br/&gt;
+
+2. .accel[__Speeding up__]
+
+&lt;br/&gt;
+
+3. .decel[__Slowing down__]
+
+&lt;br/&gt;
+
+4. .stress[__Emphasis__]
+]
+
+---
+
+## Intentions vs. observations
+
+&lt;img src="gfx/ss-mod-flow.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+???
+
+Musicians aren't perfect.
+
+Observe noisy realization
+
+
+---
+
+## Inference
+
+* Also unknown parameters `\(\theta\)`
+
+&lt;br/&gt;
+
+* If you know `\(\{S_k\}_{k=1}^n\)` and `\(\theta\)`, Kalman filter gives `\(\{\hat{X}_k\}_{k=1}^n\)`
+
+&lt;br/&gt;
+
+* If you know `\(\{X_k\}_{k=1}^n\)` and `\(\theta\)`, Viterbi algorithm gives `\(\{\hat{S}_k\}_{k=1}^n\)`
+
+&lt;br/&gt;
+
+* We need to learn `\(\{S_k,\ X_k\}_{k=1}^n\)`
+
+&lt;br/&gt;
+
+* And we need to estimate `\(\theta\)`
+
+---
+
+
+
+## Switching Kalman filter (for our model)
+
+
+.pull-left[
+$$
+`\begin{aligned}
+X_{k+1} &amp;= d(s_t,s_{k-1}) + T(s_k,s_{k-1}) X_k + \eta_{k+1}\\
+Y_t &amp;= c(s_k) + Z(s_k) X_k + \epsilon_{k}\\\\
+\eta_{k} &amp;\sim \textrm{N}(0, Q(s_k,s_{k-1}))\\
+\epsilon_k &amp; \sim \textrm{N}(0, G(s_k))
+\end{aligned}`
+$$
+]
+
+.pull-right[
+&lt;img src="gfx/ss-mod-flow.svg" width="1000%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+## Examples
+
+
+`\begin{align}
+  1\rightarrow 1 &amp;&amp; 1\rightarrow 2\\
+  x_{2} &amp;= 
+  \begin{pmatrix}1&amp;0\\0&amp;0\end{pmatrix} x_{1} 
+        &amp;   x_{3}
+                    &amp;= \begin{pmatrix} l_i\mu_{\textrm{acc}}\\ \mu_{\textrm{acc}}\end{pmatrix} +
+  \begin{pmatrix}1&amp;0\\0&amp;0\end{pmatrix} x_{1} +
+                         \mbox{N}\left(0,\ \sigma_{\textrm{acc}}^2\begin{pmatrix} l_i^2 &amp; l_i\\ l_i &amp; 1 \end{pmatrix}\right)\\
+  y_2 &amp;= (1\quad  0)  x_2 + \mbox{N}(0,\
+                                 \sigma_\epsilon^2) &amp;
+y_3 &amp;= (1\quad  0) x_3 + \mbox{N}(0,\
+                                 \sigma_\epsilon^2).
+\end{align}`
+
+
+&lt;br&gt;
+--
+&lt;hr&gt;
+&lt;br&gt;
+
+`\begin{align}
+  1\rightarrow 4 &amp;&amp; 4\rightarrow 1\\
+  x_{2} &amp;= \begin{pmatrix}0 \\ \mu_{\textrm{stress}} \end{pmatrix} +
+  \begin{pmatrix}1&amp;0\\0&amp;0\end{pmatrix} x_{1} + 
+  \textrm{N}\left(0,\ \begin{pmatrix}0&amp;0\\0&amp;\sigma^2_{\textrm{stress}}\end{pmatrix}\right)
+        &amp;  x_{3} &amp;= 
+  \begin{pmatrix}1&amp;0\\0&amp;0\end{pmatrix} x_{2} \\
+  y_2 &amp;= (1\quad  1)  x_2 + \mbox{N}(0,\
+                                 \sigma_\epsilon^2) &amp;
+y_3 &amp;= (1\quad  0) x_3 + \mbox{N}(0,\
+                                 \sigma_\epsilon^2).
+\end{align}`
+
+???
+
+x is dim-2 (speed, acceleration)
+
+What is li?
+
+---
+
+
+## We don't know the discrete states
+
+Pretend there are only 2 states
+
+<div id="htmlwidget-a3ab582ff20c17829680" style="width:100%;height:400px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a3ab582ff20c17829680">{"x":{"url":"gfx//widgets/widget_s-tree.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+
+.Large[_k_ = .orange[1], .dark-blue[2], .red[3], .green[4]]
+
+???
+
+I have 4 states 
+
+2nd order Markov
+
+Leads to 11 states in 1-Markov
+
+Piece has 231 notes
+
+
+---
+
+## Discrete particle filter &amp;mdash; .green[`dpf()`]
+
+1. Track at most `\(J\)` paths through the `\(M^n\)` tree
+
+2. At time `\(k\)`, given `\(J\)` paths, propogate each one forward
+
+3. Sample the `\(JM\)` possibilities to get only `\(J\)`
+
+4. iterate forward through time until done
+
+<div id="htmlwidget-0146ba098a5a1b2e8d85" style="width:100%;height:200px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0146ba098a5a1b2e8d85">{"x":{"url":"gfx//widgets/widget_small-tree.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+
+???
+
+This is a greedy approximation
+
+The sampling step is important
+
+Probability of sampling is proportional to current weight times likelihood times trans prob
+
+---
+
+## The complete algorithm
+
+For each performance:
+
+1. Guess a parameter vector `\(\theta\)`
+
+2. .green[`dpf()`] gives greedy state sequence `\(\{\hat{S}_k\}_{k=1}^n\)`
+
+3. It gives the likelihood as a side effect via .green[`kfilter()`]
+
+4. Iterate 1&amp;ndash;3 to maximize for `\(\theta \in \Theta\)`
+
+5. Run the .green[`ksmoother()`] to get estimate for `\(\{X_k\}_{k=1}^n\)`
+
+???
+
+kfilter() 1 step appears in dpf()
+
+ksmoother() is conditional on all the data
+
+
+
+---
+
+class: middle, center
+
+&lt;img src="gfx/two-perfs-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle, center, inverse
+
+# Similar performances
+
+---
+
+## The estimated parameters
+
+For each performance, we estimate `\(\theta\)` by penalized maximum likelihood.
+
+The parameters are things like:
+
+  - average speed in different states
+  - some variance parameters
+  - transition probabilities
+  
+We have strong prior information.
+
+???
+
+Examples of strong priors
+
+---
+
+## Distance matrix on parameters
+
+
+
+.pull-left[
+* Use Mahalanobis
+`$$d(\theta,\theta') = \sqrt{(\theta-\theta')^\top V^{-1}(\theta-\theta')}$$`
+
+&lt;br/&gt;
+
+* `\(V\)` is prior covariance matrix
+
+&lt;br/&gt;
+
+* Incorporates correlations correctly on probability vectors
+
+&lt;br/&gt;
+
+* Some performances have no "close" neighbors
+]
+
+.pull-right[
+
+&lt;img src="gfx/parametric-clusters-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+&lt;img src="gfx/other-removed-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="gfx/clustered-parameters-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Probability of "stress"
+
+&lt;img src="gfx/clustered-p14-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+&lt;img src="gfx/clust-1-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+&lt;img src="gfx/clust-2-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+&lt;img src="gfx/similar-perfs-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+&lt;img src="gfx/rubinstein-perfs-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+&lt;img src="gfx/cortot-performance-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+## In summary
+
+* We develop a switching model for tempo decisions 
+
+* We give an algorithm for performing likelihood inference
+
+* We estimate our model using a large collection of recordings of the same composition
+
+* We demonstrate how the model is able to recover performer intentions
+
+* We use the learned representations to compare and contrast recordings 
+
+
+
+---
+
+## Collaborators, etc.
+
+.pull-left[
+&lt;p style="text-align:center;"&gt;
+&lt;img src="gfx/craphael.jpg" height="200px"&gt;
+&lt;img src="gfx/mmcbride.jpg" height="200px"&gt;
+&lt;/p&gt;
+&lt;p style="text-align:center;"&gt;
+&lt;img src="gfx/rob_granger.jpg" height="200px"&gt;&lt;/p&gt;
+]
+
+.pull-right[
+&lt;iframe width="460" height="250" src="https://www.youtube.com/embed/W8RTpOe-AqA?start=68" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+&lt;p style="text-align:center;"&gt;&lt;img src="gfx/nsf-logo.png" height="200px"&gt;&lt;/p&gt;
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="src/macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
