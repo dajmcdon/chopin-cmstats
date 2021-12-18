@@ -18,8 +18,6 @@ output:
 library(tidyverse)
 library(lubridate)
 library(fontawesome)
-pro = fontawesome::fa("thumbs-up", fill="green")
-con = fontawesome::fa("bomb", fill="orange")
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
   dev = "svg",
@@ -85,14 +83,11 @@ tempos %>% select(-meas_num,-beat) %>%
   theme_void() +
   scale_color_manual(values = rep(cols, length.out = nrow(tempos))) +
   theme(legend.position = "none", plot.background = element_rect(fill = primary))
-
-
-
 ```
 
 layout: true
 
-<div class="my-footer"><span><a href="https://dajmcdon.github.io/chopin-talk" style="color:white">dajmcdon.github.io/chopin-talk</a></span></div> 
+<div class="my-footer"><span><a href="https://dajmcdon.github.io/chopin-talk" style="color:white">dajmcdon.github.io/chopin-cmstats</a></span></div> 
 
 ---
 background-image: url("gfx/cover-1.svg")
@@ -113,16 +108,15 @@ background-position: top
 ]
 
 .pull-right[.center[.middle[
-<br/>
 <table>
 <tr>
-<td>![:scale 50%](gfx/qr-slides.png)</td>
-<td>![:scale 50%](gfx/qr-code.png)</td>
-<td>![:scale 50%](gfx/qr-mywww.png)</td>
+<td>![:scale 60%](gfx/qr-paper.png)</td>
+<td>![:scale 90%](gfx/qr-slides.png)</td>
+<td>![:scale 90%](gfx/qr-mywww.png)</td>
 </tr>
 <tr>
+<td>`r fa("file-alt")` Paper</td>
 <td>`r fa("chalkboard-teacher")` Slides</td>
-<td>`r fa("code")` Code</td>
 <td>`r fa("at")` My WWW</td>
 </tr>
 </table>
@@ -395,17 +389,17 @@ perfcols = viridis_pal(begin=.2)(nlevels(plots$state))
 ```
 
 ```{r example-perf,fig.height=6,fig.width=10}
-perfshapes = 15:18
+perfshapes = c(20, 17, 18, 8)
 plots = plots %>% mutate(performer, performer = sub('_',' ',performer))
 ggplot(filter(plots, performer == 'Richter 1976')) + 
   geom_rect(data=data.frame(xmin = 33, xmax = 45, ymin = -Inf, ymax = Inf),
               aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),
               fill = 'gray90', color = 'gray90') +
-  geom_line(aes(x=measure, y=tempo), color='gray40') +
+  geom_line(aes(x=measure, y=tempo), color=primary) +
   scale_x_continuous(expand = expansion()) +
-  geom_point(aes(x=measure, y=inferred, color=state,shape=state),size=2.5) +
+  geom_point(aes(x=measure, y=inferred, color=state,shape=state), size=4) +
  # scale_color_brewer(palette='Set1') +
-  scale_color_manual(values=perfcols) +
+  scale_color_brewer(palette = "PuOr", direction = -1) +
   scale_shape_manual(values=perfshapes) +
   th +
   facet_wrap(~performer)
@@ -743,7 +737,7 @@ ggplot(filter(plots, performer %in% c('Richter 1976', 'Hatto 1993'))) +
   scale_x_continuous(expand = expansion()) +
   geom_point(aes(x=measure, y=inferred, color=state,shape=state),size=2) +
  # scale_color_brewer(palette='Set1') +
-  scale_color_manual(values=perfcols) +
+  scale_color_brewer(palette = "PuOr", direction = -1) +
   scale_shape_manual(values=15:18) +
   #theme(legend.position = 'bottom', legend.title = element_blank(),
   #      strip.text = element_text(hjust = 0))  +
@@ -890,7 +884,7 @@ ttt %>%  ggplot(aes(x=value,fill=clust)) +
              labeller = label_parsed) +
   scale_fill_manual(values=fivecolors) +
   th + 
-  scale_x_continuous(breaks=scales::pretty_breaks(3), expand=expansion(c(0,.05)))+
+  scale_x_continuous(breaks=scales::pretty_breaks(3), expand=expansion())+
   scale_y_continuous(expand = expansion(c(0,0.05)))+
   xlab('') +theme(legend.position = "right")
 ```
@@ -925,7 +919,7 @@ ggplot(filter(plots, clust=='1')) +
   geom_point(aes(x=measure, y=inferred, color=state, shape=state),size=2) +
   # scale_color_brewer(palette='Set1') +
   scale_x_continuous(expand = expansion()) +
-  scale_color_manual(values=perfcols,drop=FALSE) +
+  scale_color_brewer(palette = "PuOr", direction = -1,drop=FALSE) +
   scale_shape_manual(values=perfshapes,drop=FALSE) +
   th + theme(legend.position = "right") + ggtitle("Cluster 1") +
   facet_wrap(~performer,ncol=3) #+
@@ -940,7 +934,7 @@ ggplot(filter(plots, clust=='2')) +
   geom_line(aes(x=measure, y=tempo), color='gray40') +
   geom_point(aes(x=measure, y=inferred, color=state, shape=state),size=2) +
   # scale_color_brewer(palette='Set1') +
-  scale_color_manual(values=perfcols) +
+  scale_color_brewer(palette = "PuOr", direction = -1,drop=FALSE) +
   scale_x_continuous(expand = expansion()) +
   scale_shape_manual(values=perfshapes) +
   th + theme(legend.position = "right") + ggtitle("Cluster 2") +
@@ -960,7 +954,7 @@ ggplot(similar) +
   geom_point(aes(x=measure, y=inferred, color=state,shape=state),size=2) +
   # scale_color_brewer(palette='Set1') +
   scale_x_continuous(expand = expansion()) +
-  scale_color_manual(values=perfcols) + th +
+  scale_color_brewer(palette = "PuOr", direction = -1,drop=FALSE) + th +
   theme(legend.position = "right") +
   facet_wrap(~cl,nrow=2) #+
 ```
@@ -980,7 +974,7 @@ ggplot(similar) +
   geom_point(aes(x=measure, y=inferred, color=state,shape=state),size=2) +
   scale_x_continuous(expand = expansion()) +
   # scale_color_brewer(palette='Set1') +
-  scale_color_manual(values=perfcols) + th +
+  scale_color_brewer(palette = "PuOr", direction = -1,drop=FALSE) + th +
   theme(legend.position = "right") +
   facet_wrap(~cl,nrow=2) #+
 ```
@@ -988,7 +982,7 @@ ggplot(similar) +
 ---
 class: middle
 
-```{r cortot-performance}
+```{r cortot-performance, fig.height=5}
 ggplot(filter(plots, performer == 'Cortot 1951')) + 
   geom_rect(data=data.frame(xmin = 33, xmax = 45, ymin = -Inf, ymax = Inf),
               aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),
@@ -996,7 +990,7 @@ ggplot(filter(plots, performer == 'Cortot 1951')) +
   geom_line(aes(x=measure, y=tempo), color='gray40') +
   geom_point(aes(x=measure, y=inferred, color=state,shape=state),size=2) +
   # scale_color_brewer(palette='Set1') +
-  scale_color_manual(values=perfcols, drop=FALSE) +
+  scale_color_brewer(palette = "PuOr", direction = -1,drop=FALSE) +
   scale_x_continuous(expand = expansion()) +
   scale_shape_manual(values=perfshapes, drop=FALSE) +
   th + theme(legend.position = 'right')+
