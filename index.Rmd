@@ -509,19 +509,21 @@ include_graphics("gfx/markov-trans.svg")
 ]
 
 .pull-right-narrow[
-1. .const[__Constant tempo__]
+
+<h3 class=const>1. Constant tempo</h3>
 
 <br/>
 
-2. .accel[__Speeding up__]
+<h3 class=accel>2. Speeding up</h3>
 
 <br/>
 
-3. .decel[__Slowing down__]
+<h3 class=decel>3. Slowing down</h3>
 
 <br/>
 
-4. .stress[__Emphasis__]
+<h3 class=stress>4. Emphasis</h3>
+
 ]
 
 ---
@@ -568,12 +570,14 @@ Observe noisy realization
 ## Switching Kalman filter (for our model)
 
 
+
+
 .pull-left[
 $$
 \begin{aligned}
-X_{k+1} &= d(s_t,s_{k-1}) + T(s_k,s_{k-1}) X_k + \eta_{k+1}\\
-Y_t &= c(s_k) + Z(s_k) X_k + \epsilon_{k}\\\\
-\eta_{k} &\sim \textrm{N}(0, Q(s_k,s_{k-1}))\\
+X_{k+1} &= d(s_k,s_{k-1}) + T(s_k,s_{k-1}) X_k + \eta_{k+1}\\\\
+Y_k &= c(s_k) + Z(s_k) X_k + \epsilon_{k}\\\\
+\eta_{k} &\sim \textrm{N}(0, Q(s_k,s_{k-1}))\\\\
 \epsilon_k & \sim \textrm{N}(0, G(s_k))
 \end{aligned}
 $$
@@ -644,14 +648,14 @@ tedges = tibble(from=rep(1:7,each=2),to=c(2:15))
 vn = visNetwork(tnodes,tedges) %>%
   visEdges(arrows = "to") %>%
   visOptions(highlightNearest = list(enabled=TRUE,degree=list(to=4,from=0),algorithm="hierarchical")) %>%
-  visGroups(groupname='1',color=orange) %>% visGroups(groupname = '2',color=blue) %>% visGroups(groupname = '3',color=red) %>%
+  visGroups(groupname='1',color=orange) %>% visGroups(groupname = '2',color=list(border=db, background=db)) %>% visGroups(groupname = '3',color=red) %>%
   visGroups(groupname = '4',color=green)%>%
-  visHierarchicalLayout()
+  visHierarchicalLayout(direction = "UD")
 
 frameWidget(vn, height=400)
 ```
 
-.Large[_k_ = .orange[1], .dark-blue[2], .red[3], .green[4]]
+.Large[_k_ = .dark-blue[1], .yellow[2], .red[3], .green[4]]
 
 ???
 

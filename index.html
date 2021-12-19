@@ -352,19 +352,21 @@ class: center, middle, inverse
 ]
 
 .pull-right-narrow[
-1. .const[__Constant tempo__]
+
+&lt;h3 class=const&gt;1. Constant tempo&lt;/h3&gt;
 
 &lt;br/&gt;
 
-2. .accel[__Speeding up__]
+&lt;h3 class=accel&gt;2. Speeding up&lt;/h3&gt;
 
 &lt;br/&gt;
 
-3. .decel[__Slowing down__]
+&lt;h3 class=decel&gt;3. Slowing down&lt;/h3&gt;
 
 &lt;br/&gt;
 
-4. .stress[__Emphasis__]
+&lt;h3 class=stress&gt;4. Emphasis&lt;/h3&gt;
+
 ]
 
 ---
@@ -409,12 +411,14 @@ Observe noisy realization
 ## Switching Kalman filter (for our model)
 
 
+
+
 .pull-left[
 $$
 `\begin{aligned}
-X_{k+1} &amp;= d(s_t,s_{k-1}) + T(s_k,s_{k-1}) X_k + \eta_{k+1}\\
-Y_t &amp;= c(s_k) + Z(s_k) X_k + \epsilon_{k}\\\\
-\eta_{k} &amp;\sim \textrm{N}(0, Q(s_k,s_{k-1}))\\
+X_{k+1} &amp;= d(s_k,s_{k-1}) + T(s_k,s_{k-1}) X_k + \eta_{k+1}\\\\
+Y_k &amp;= c(s_k) + Z(s_k) X_k + \epsilon_{k}\\\\
+\eta_{k} &amp;\sim \textrm{N}(0, Q(s_k,s_{k-1}))\\\\
 \epsilon_k &amp; \sim \textrm{N}(0, G(s_k))
 \end{aligned}`
 $$
@@ -478,7 +482,7 @@ Pretend there are only 2 states
 <div id="htmlwidget-a3ab582ff20c17829680" style="width:100%;height:400px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-a3ab582ff20c17829680">{"x":{"url":"gfx//widgets/widget_s-tree.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 
-.Large[_k_ = .orange[1], .dark-blue[2], .red[3], .green[4]]
+.Large[_k_ = .dark-blue[1], .yellow[2], .red[3], .green[4]]
 
 ???
 
